@@ -1,23 +1,163 @@
-import logo from './logo.svg';
 import './App.css';
+import { Input, Button, Row, Col, Steps, Spin } from 'antd';
+import React, { useState } from 'react';
+import axios from 'axios';
+require('dotenv').config()
+
+const { Step } = Steps;
+const api_key = process.env.REACT_APP_OMDB_API
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+  // App States
+  const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [lastSearch, setLastSearch] = useState("");
+  const [nominated, setNominated] = useState({});
+  const [nominationCount, setNominationCount] = useState(0);
+
+
+  // Sub-components
+  function MovieDetail(props) {
+    const movieNominated = props.body.imdbID in nominated;
+    return (
+      <Row style={{ alignItems: "center", marginBottom: 20 }}>
+        <Col style={{ marginRight: 5 }}>
+          <p style={{ marginBottom: 10, marginTop: 10 }}>
+            {props.body.Title} ({props.body.Year})
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        </Col>
+        <Col>
+          <Button type="primary" disabled={movieNominated} size={10} onClick={() => props.onClick(props.body)}>
+            Nominate
+          </Button>
+        </Col>
+      </Row>
+    )
+  }
+
+  function NominationDetail(props) {
+    return (
+      <Row style={{ alignItems: "center", marginBottom: 20 }}>
+        <Col style={{ marginRight: 5 }}>
+          <p style={{ marginBottom: 10, marginTop: 10 }}>
+            {props.body.Title} ({props.body.Year})
+        </p>
+        </Col>
+        <Col>
+          <Button type="primary" size={10} onClick={() => props.onClick(props.body)}>
+            Remove
+          </Button>
+        </Col>
+      </Row>
+    )
+  }
+
+  const onType = (event) => {
+    const curr_query = event.target.value;
+    setQuery(curr_query)
+    const loadInfo = async (query) => {
+      setLoading(true);
+      axios.get(`http://www.omdbapi.com`,
+        {
+          params: {
+            apikey: api_key,
+            type: "movie",
+            s: curr_query
+          }
+        }).then(res => {
+          console.log(res);
+          if (res.data.Response !== "False") {
+            setSearchResults(res.data.Search);
+            setLastSearch("Showing results for: " + curr_query);
+          } else {
+            setSearchResults([]);
+            setLastSearch("No results for: " + curr_query);
+          }
+          setLoading(false);
+        }).catch(err => {
+          setSearchResults([]);
+          setLastSearch("No results for: " + curr_query);
+          setLoading(false);
+        })
+    }
+    loadInfo(query);
+  }
+
+  const getProgressIndex = () => {
+    if (Object.keys(nominated).length < 5) {
+      if (!query) {
+        return 0;
+      }
+      return 1;
+    }
+    return 2;
+  }
+
+  const addNomination = (body) => {
+    var newNominated = { ...nominated }
+    newNominated[body.imdbID] = body
+    setNominated(newNominated);
+    console.log(nominated);
+  }
+
+  const deleteNomination = (body) => {
+    var newNominated = { ...nominated }
+    delete newNominated[body.imdbID]
+    setNominated(newNominated);
+    console.log(nominated);
+  }
+
+  return (
+    <div>
+      <body className="App-body">
+
+        <div className="App-compartment">
+          <h1>The Spotties</h1>
+          <p> Hello, this is my entry in the spotty awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. </p>
+          <Steps size="small" current={getProgressIndex()}>
+            <Step title="Search OMDB" />
+            <Step title="Nominate from Search" />
+            <Step title="Evaluate Picks and Share" />
+          </Steps>
+        </div>
+
+        <div className="App-compartment">
+          <div style={{ textAlign: "center" }}>
+            <h1>Search</h1>
+          </div>
+          <h3> Movie Title:</h3>
+          <Input
+            placeholder="Enter movie title here!"
+            loading={loading}
+            allowClear
+            size="large"
+            value={query}
+            onChange={val => onType(val)}
+            style={{ marginBottom: 20 }}
+          />
+          {query !== "" && <h3> {lastSearch} </h3>}
+          {loading &&
+            <div style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
+              <Spin />
+            </div>
+          }
+          {!loading && searchResults.map(searchResult => (
+            <MovieDetail body={searchResult} onClick={addNomination} />
+          ))}
+        </div>
+
+        <div className="App-compartment">
+          <div style={{ textAlign: "center" }}>
+            <h1>Manage Nominations</h1>
+          </div>
+          {Object.entries(nominated).map(nominee => (
+            <NominationDetail body={nominee[1]} onClick={deleteNomination} />
+          ))}
+        </div>
+
+      </body>
     </div>
   );
 }
