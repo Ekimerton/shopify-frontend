@@ -1,10 +1,12 @@
 import './App.css';
-import { Input, Button, Row, Col, Steps, Spin, notification, Card } from 'antd';
+import { Input, Button, Row, Col, Steps, Spin, notification, Card, Avatar } from 'antd';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { OmitProps } from 'antd/lib/transfer/ListBody';
 require('dotenv').config()
 
 const { Step } = Steps;
+const { Meta } = Card;
 const api_key = process.env.REACT_APP_OMDB_API
 
 function App() {
@@ -12,7 +14,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [lastSearch, setLastSearch] = useState("");
   const [nominated, setNominated] = useState({});
   const [nominationCount, setNominationCount] = useState(0);
 
@@ -29,42 +30,38 @@ function App() {
   function MovieDetail(props) {
     const movieNominated = props.body.imdbID in nominated;
     return (
-      <Row style={{ alignItems: "center", marginBottom: 20 }}>
-        <Col style={{ marginRight: 5 }}>
-          <p style={{ marginBottom: 10, marginTop: 10 }}>
-            {props.body.Title} ({props.body.Year})
-        </p>
-        </Col>
-        <Col>
-          <Button type="primary" disabled={movieNominated || nominationCount >= 5} size={10} onClick={() => props.onClick(props.body)}>
+      <Card
+        cover={<img alt="missing poster" src={props.body.Poster} height={300} />}
+        actions={[
+          <Button type="primary" disabled={movieNominated || nominationCount >= 5} onClick={() => props.onClick(props.body)}>
             Nominate
           </Button>
-        </Col>
-      </Row>
+        ]}
+      >
+        <Meta title={props.body.Title} description={props.body.Year} />
+      </Card>
     )
   }
 
   function NominationDetail(props) {
     return (
-      <Row style={{ alignItems: "center", marginBottom: 20 }}>
-        <Col style={{ marginRight: 5 }}>
-          <p style={{ marginBottom: 10, marginTop: 10 }}>
-            {props.body.Title} ({props.body.Year})
-        </p>
-        </Col>
-        <Col>
-          <Button type="primary" size={10} onClick={() => props.onClick(props.body)}>
+      <Card
+        cover={<img alt="missing poster" src={props.body.Poster} height={300} />}
+        actions={[
+          <Button type="primary" onClick={() => props.onClick(props.body)}>
             Remove
           </Button>
-        </Col>
-      </Row>
+        ]}
+      >
+        <Meta title={props.body.Title} description={props.body.Year} />
+      </Card>
     )
   }
 
   const onType = (event) => {
     const curr_query = event.target.value;
     setQuery(curr_query)
-    const loadInfo = async (query) => {
+    const loadInfo = async (curr) => {
       setLoading(true);
       axios.get(`http://www.omdbapi.com`,
         {
@@ -77,29 +74,16 @@ function App() {
           console.log(res);
           if (res.data.Response !== "False") {
             setSearchResults(res.data.Search);
-            setLastSearch("Showing results for: " + curr_query);
           } else {
             setSearchResults([]);
-            setLastSearch("No results for: " + curr_query);
           }
           setLoading(false);
         }).catch(err => {
           setSearchResults([]);
-          setLastSearch("No results for: " + curr_query);
           setLoading(false);
         })
     }
     loadInfo(query);
-  }
-
-  const getProgressIndex = () => {
-    if (nominationCount < 5) {
-      if (!query) {
-        return 0;
-      }
-      return 1;
-    }
-    return 2;
   }
 
   const addNomination = (body) => {
@@ -117,6 +101,17 @@ function App() {
     delete newNominated[body.imdbID]
     setNominated(newNominated);
     setNominationCount(nominationCount - 1);
+  }
+
+  const getProgressIndex = () => {
+    switch (nominationCount) {
+      case 0:
+        return 0;
+      case 5:
+        return 2;
+      default:
+        return 1;
+    }
   }
 
   return (
@@ -143,21 +138,29 @@ function App() {
             onChange={val => onType(val)}
             style={{ marginBottom: 20 }}
           />
-          {query !== "" && <h3> {lastSearch} </h3>}
+          {query !== "" && !loading && <h3>Showing results for: {query}</h3>}
           {loading &&
             <div style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
               <Spin />
             </div>
           }
-          {!loading && searchResults.map(searchResult => (
-            <MovieDetail body={searchResult} onClick={addNomination} />
-          ))}
+          <Row gutter={16} style={{ alignItems: "center", justifyContent: "center" }}>
+            {!loading && searchResults.map(searchResult => (
+              <Col span={6} style={{ marginBottom: 15 }}>
+                <MovieDetail body={searchResult} onClick={addNomination} />
+              </Col>
+            ))}
+          </Row>
         </Card>
 
         <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center" }}>
-          {Object.entries(nominated).map(nominee => (
-            <NominationDetail body={nominee[1]} onClick={deleteNomination} />
-          ))}
+          <Row gutter={16} style={{ alignItems: "center", justifyContent: "center" }}>
+            {Object.entries(nominated).map(nominee => (
+              <Col span={6} style={{ marginBottom: 15 }}>
+                <NominationDetail body={nominee[1]} onClick={deleteNomination} />
+              </Col>
+            ))}
+          </Row>
         </Card>
 
       </body>
