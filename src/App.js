@@ -1,12 +1,11 @@
 import './App.css';
-import { Input, Button, Row, Col, Steps, Spin } from 'antd';
+import { Input, Button, Row, Col, Steps, Spin, notification } from 'antd';
 import React, { useState } from 'react';
 import axios from 'axios';
 require('dotenv').config()
 
 const { Step } = Steps;
 const api_key = process.env.REACT_APP_OMDB_API
-
 
 function App() {
   // App States
@@ -17,6 +16,14 @@ function App() {
   const [nominated, setNominated] = useState({});
   const [nominationCount, setNominationCount] = useState(0);
 
+  // Notifications
+  const successNotification = () => {
+    notification["success"]({
+      message: 'Nominations Complete',
+      description:
+        'You have successfully nominated five movies! Scroll down to adjust nominations or share final picks.',
+    });
+  };
 
   // Sub-components
   function MovieDetail(props) {
@@ -29,7 +36,7 @@ function App() {
         </p>
         </Col>
         <Col>
-          <Button type="primary" disabled={movieNominated} size={10} onClick={() => props.onClick(props.body)}>
+          <Button type="primary" disabled={movieNominated || nominationCount >= 5} size={10} onClick={() => props.onClick(props.body)}>
             Nominate
           </Button>
         </Col>
@@ -86,7 +93,7 @@ function App() {
   }
 
   const getProgressIndex = () => {
-    if (Object.keys(nominated).length < 5) {
+    if (nominationCount < 5) {
       if (!query) {
         return 0;
       }
@@ -97,16 +104,19 @@ function App() {
 
   const addNomination = (body) => {
     var newNominated = { ...nominated }
-    newNominated[body.imdbID] = body
+    newNominated[body.imdbID] = body;
     setNominated(newNominated);
-    console.log(nominated);
+    if (nominationCount >= 4) {
+      successNotification();
+    }
+    setNominationCount(nominationCount + 1);
   }
 
   const deleteNomination = (body) => {
     var newNominated = { ...nominated }
     delete newNominated[body.imdbID]
     setNominated(newNominated);
-    console.log(nominated);
+    setNominationCount(nominationCount - 1);
   }
 
   return (
@@ -118,7 +128,7 @@ function App() {
           <p> Hello, this is my entry in the spotty awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. </p>
           <Steps size="small" current={getProgressIndex()}>
             <Step title="Search OMDB" />
-            <Step title="Nominate from Search" />
+            <Step title={nominationCount == 5 ? "Nominations Complete!" : (5 - nominationCount) + " Nominations Left"} />
             <Step title="Evaluate Picks and Share" />
           </Steps>
         </div>
