@@ -1,5 +1,5 @@
 import './App.css';
-import { Input, Button, Row, Col, Steps, Spin, notification } from 'antd';
+import { Input, Button, Row, Col, Steps, Spin, notification, Card } from 'antd';
 import React, { useState } from 'react';
 import axios from 'axios';
 require('dotenv').config()
@@ -123,20 +123,16 @@ function App() {
     <div>
       <body className="App-body">
 
-        <div className="App-compartment">
-          <h1>The Spotties</h1>
+        <Card className="App-compartment" title="The Shoppies" headStyle={{ fontSize: 24, textAlign: "center" }}>
           <p> Hello, this is my entry in the spotty awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. </p>
           <Steps size="small" current={getProgressIndex()}>
             <Step title="Search OMDB" />
             <Step title={nominationCount == 5 ? "Nominations Complete!" : (5 - nominationCount) + " Nominations Left"} />
             <Step title="Evaluate Picks and Share" />
           </Steps>
-        </div>
+        </Card>
 
-        <div className="App-compartment">
-          <div style={{ textAlign: "center" }}>
-            <h1>Search</h1>
-          </div>
+        <Card className="App-compartment" title="Search" headStyle={{ fontSize: 24, textAlign: "center" }}>
           <h3> Movie Title:</h3>
           <Input
             placeholder="Enter movie title here!"
@@ -156,16 +152,13 @@ function App() {
           {!loading && searchResults.map(searchResult => (
             <MovieDetail body={searchResult} onClick={addNomination} />
           ))}
-        </div>
+        </Card>
 
-        <div className="App-compartment">
-          <div style={{ textAlign: "center" }}>
-            <h1>Manage Nominations</h1>
-          </div>
+        <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center" }}>
           {Object.entries(nominated).map(nominee => (
             <NominationDetail body={nominee[1]} onClick={deleteNomination} />
           ))}
-        </div>
+        </Card>
 
       </body>
     </div>
