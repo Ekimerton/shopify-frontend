@@ -129,7 +129,7 @@ function App() {
       <body className="App-body">
 
         <Card className="App-compartment" title="The Shoppies" headStyle={{ fontSize: 24, textAlign: "center" }}>
-          <p> Hello, this is my entry in the spotty awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. </p>
+          <p> Hello, this is my entry in the shoppy awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. Your nominations will persist as you come and go from the site. </p>
           <Steps size="small" current={getProgressIndex()}>
             <Step title="Search OMDB" />
             <Step title={nominationCount === 5 ? "Nominations Complete!" : (5 - nominationCount) + " Nominations Left"} />
@@ -154,7 +154,7 @@ function App() {
             style={{ width: '100%', justifyContent: 'center' }}
             dataSource={searchResults}
             loading={loading}
-            locale={{ emptyText: "No Search Results" }}
+            locale={{ emptyText: query === "" ? "Your Search Results Go Here!" : "No Search Results" }}
             renderItem={searchResult => (
               <List.Item>
                 <MovieDetail body={searchResult} onClick={addNomination} />
@@ -163,7 +163,7 @@ function App() {
           />
         </Card>
 
-        <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center" }}>
+        <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center", justifyContent: "center", alignItems: "center" }}>
           <List
             grid={{ gutter: 16 }}
             locale={{ emptyText: "Your Nominations Go Here!" }}
