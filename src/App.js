@@ -1,8 +1,7 @@
 import './App.css';
 import { Input, Button, Row, Col, Steps, Spin, notification, Card, Avatar } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { OmitProps } from 'antd/lib/transfer/ListBody';
 require('dotenv').config()
 
 const { Step } = Steps;
@@ -14,8 +13,19 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [nominated, setNominated] = useState({});
-  const [nominationCount, setNominationCount] = useState(0);
+  const [nominated, setNominated] = usePersistedState("nominated", {});
+  const [nominationCount, setNominationCount] = usePersistedState("nominatedCount", 0);
+
+  //Persistant States using LocalStorage
+  function usePersistedState(key, defaultValue) {
+    const [state, setState] = useState(
+      () => JSON.parse(localStorage.getItem(key)) || defaultValue
+    );
+    useEffect(() => {
+      localStorage.setItem(key, JSON.stringify(state));
+    }, [key, state]);
+    return [state, setState];
+  }
 
   // Notifications
   const successNotification = () => {
