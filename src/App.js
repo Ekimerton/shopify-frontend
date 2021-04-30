@@ -1,5 +1,5 @@
 import './App.css';
-import { Input, Button, Row, Col, Steps, Spin, notification, Card, Avatar } from 'antd';
+import { Input, Button, Steps, Spin, notification, Card, Space, List } from 'antd';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 require('dotenv').config()
@@ -41,7 +41,10 @@ function App() {
     const movieNominated = props.body.imdbID in nominated;
     return (
       <Card
-        cover={<img alt="missing poster" src={props.body.Poster} height={300} />}
+        style={{ width: 200 }}
+        cover={
+          <img alt="missing poster" src={props.body.Poster} height={250} />
+        }
         actions={[
           <Button type="primary" disabled={movieNominated || nominationCount >= 5} onClick={() => props.onClick(props.body)}>
             Nominate
@@ -56,7 +59,10 @@ function App() {
   function NominationDetail(props) {
     return (
       <Card
-        cover={<img alt="missing poster" src={props.body.Poster} height={300} />}
+        style={{ width: 200 }}
+        cover={
+          <img alt="missing poster" src={props.body.Poster} height={250} />
+        }
         actions={[
           <Button type="primary" onClick={() => props.onClick(props.body)}>
             Remove
@@ -68,33 +74,27 @@ function App() {
     )
   }
 
-  const onType = (event) => {
-    const curr_query = event.target.value;
-    setQuery(curr_query)
-    const loadInfo = async (curr) => {
-      setLoading(true);
-      axios.get(`http://www.omdbapi.com`,
-        {
-          params: {
-            apikey: api_key,
-            type: "movie",
-            s: curr_query
-          }
-        }).then(res => {
-          console.log(res);
-          if (res.data.Response !== "False") {
-            setSearchResults(res.data.Search);
-          } else {
-            setSearchResults([]);
-          }
-          setLoading(false);
-        }).catch(err => {
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`https://www.omdbapi.com`,
+      {
+        params: {
+          apikey: api_key,
+          type: "movie",
+          s: query
+        }
+      }).then(res => {
+        if (res.data.Response !== "False") {
+          setSearchResults(res.data.Search);
+        } else {
           setSearchResults([]);
-          setLoading(false);
-        })
-    }
-    loadInfo(query);
-  }
+        }
+        setLoading(false);
+      }).catch(err => {
+        setSearchResults([]);
+        setLoading(false);
+      })
+  }, [query]);
 
   const addNomination = (body) => {
     var newNominated = { ...nominated }
@@ -132,7 +132,7 @@ function App() {
           <p> Hello, this is my entry in the spotty awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. </p>
           <Steps size="small" current={getProgressIndex()}>
             <Step title="Search OMDB" />
-            <Step title={nominationCount == 5 ? "Nominations Complete!" : (5 - nominationCount) + " Nominations Left"} />
+            <Step title={nominationCount === 5 ? "Nominations Complete!" : (5 - nominationCount) + " Nominations Left"} />
             <Step title="Evaluate Picks and Share" />
           </Steps>
         </Card>
@@ -145,32 +145,35 @@ function App() {
             allowClear
             size="large"
             value={query}
-            onChange={val => onType(val)}
+            onChange={event => setQuery(event.target.value)}
             style={{ marginBottom: 20 }}
           />
           {query !== "" && !loading && <h3>Showing results for: {query}</h3>}
-          {loading &&
-            <div style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
-              <Spin />
-            </div>
-          }
-          <Row gutter={16} style={{ alignItems: "center", justifyContent: "center" }}>
-            {!loading && searchResults.map(searchResult => (
-              <Col span={6} style={{ marginBottom: 15 }}>
+          <List
+            grid={{ gutter: 16 }}
+            style={{ width: '100%', justifyContent: 'center' }}
+            dataSource={searchResults}
+            loading={loading}
+            locale={{ emptyText: "No Search Results" }}
+            renderItem={searchResult => (
+              <List.Item>
                 <MovieDetail body={searchResult} onClick={addNomination} />
-              </Col>
-            ))}
-          </Row>
+              </List.Item>
+            )}
+          />
         </Card>
 
         <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center" }}>
-          <Row gutter={16} style={{ alignItems: "center", justifyContent: "center" }}>
-            {Object.entries(nominated).map(nominee => (
-              <Col span={6} style={{ marginBottom: 15 }}>
+          <List
+            grid={{ gutter: 16 }}
+            locale={{ emptyText: "Your Nominations Go Here!" }}
+            dataSource={Object.entries(nominated)}
+            renderItem={nominee => (
+              <List.Item>
                 <NominationDetail body={nominee[1]} onClick={deleteNomination} />
-              </Col>
-            ))}
-          </Row>
+              </List.Item>
+            )}
+          />
         </Card>
 
       </body>
