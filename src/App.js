@@ -81,7 +81,7 @@ function App() {
         params: {
           apikey: api_key,
           type: "movie",
-          s: query
+          s: query.trim()
         }
       }).then(res => {
         if (res.data.Response !== "False") {
