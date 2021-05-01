@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/shopify-frontend/static/css/main.308c5209.chunk.css",
+    "main.css": "/shopify-frontend/static/css/main.0db75c72.chunk.css",
     "main.js": "/shopify-frontend/static/js/main.f4ec5f11.chunk.js",
     "main.js.map": "/shopify-frontend/static/js/main.f4ec5f11.chunk.js.map",
     "runtime-main.js": "/shopify-frontend/static/js/runtime-main.d0f37aa5.js",
@@ -10,14 +10,14 @@
     "static/js/2.beaff203.chunk.js.map": "/shopify-frontend/static/js/2.beaff203.chunk.js.map",
     "index.html": "/shopify-frontend/index.html",
     "static/css/2.03710b91.chunk.css.map": "/shopify-frontend/static/css/2.03710b91.chunk.css.map",
-    "static/css/main.308c5209.chunk.css.map": "/shopify-frontend/static/css/main.308c5209.chunk.css.map",
+    "static/css/main.0db75c72.chunk.css.map": "/shopify-frontend/static/css/main.0db75c72.chunk.css.map",
     "static/js/2.beaff203.chunk.js.LICENSE.txt": "/shopify-frontend/static/js/2.beaff203.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.d0f37aa5.js",
     "static/css/2.03710b91.chunk.css",
     "static/js/2.beaff203.chunk.js",
-    "static/css/main.308c5209.chunk.css",
+    "static/css/main.0db75c72.chunk.css",
     "static/js/main.f4ec5f11.chunk.js"
   ]
 }
