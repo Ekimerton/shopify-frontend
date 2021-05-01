@@ -125,8 +125,13 @@ function App() {
     <div>
       <body className="App-body">
 
-        <Card className="App-compartment" title="The Shoppies" headStyle={{ fontSize: 24, textAlign: "center" }}>
-          <p> Hello, this is my entry in the shoppy awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. Your nominations will persist as you come and go from the site. </p>
+        <Card className="App-compartment" title="The Shoppies 🎬" headStyle={{ fontSize: 24, textAlign: "center" }}>
+          <p>
+            Hi! My name is <a href={"https://www.linkedin.com/in/ekim-karabey/"}>Ekim</a> and this is my entry for the Spotify 2021 Fall Internship coding challenge. In case you stumble upon this by accident and are confused, the guidelines for the challenge are <a href={"https://docs.google.com/document/d/1SdR9rQpocsH5rPTOcxr9noqHRld5NJlylKO9Hf94U8U"}>here</a>. All of the code for this project can be found on <a href={"https://github.com/Ekimerton/shopify-frontend"}>Github</a>.
+          </p>
+          <p>
+            You can start by searching for any movies within the OMDB database using the search card at the bottom. Once you find movies you like, you can save up to five as your nominations. Your nominations will persist even after you leave the webpage and come back at a later date.
+          </p>
           <Steps size="small" current={getProgressIndex()}>
             <Step title="Search OMDB" />
             <Step title={(5 - nominationCount) + " Nominations Left"} />
