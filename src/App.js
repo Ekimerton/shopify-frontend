@@ -32,7 +32,7 @@ function App() {
     notification["success"]({
       message: 'Nominations Complete',
       description:
-        'You have successfully nominated five movies! Scroll down to adjust nominations or share final picks.',
+        'You have successfully nominated five movies! Scroll up to adjust nominations or confirm final picks.',
     });
   };
 
@@ -40,19 +40,16 @@ function App() {
   function MovieDetail(props) {
     const movieNominated = props.body.imdbID in nominated;
     return (
-      <Card
-        style={{ width: 200 }}
-        cover={
-          <img alt="missing poster" src={props.body.Poster} height={250} />
-        }
-        actions={[
-          <Button type="primary" disabled={movieNominated || nominationCount >= 5} onClick={() => props.onClick(props.body)}>
-            Nominate
+      <List.Item>
+        <List.Item.Meta
+          avatar={<img alt="missing poster" src={props.body.Poster} height={100} width={70} />}
+          title={props.body.Title}
+          description={props.body.Year}
+        />
+        <Button type="primary" disabled={movieNominated || nominationCount >= 5} onClick={() => props.onClick(props.body)}>
+          Nominate
           </Button>
-        ]}
-      >
-        <Meta title={props.body.Title} description={props.body.Year} />
-      </Card>
+      </List.Item>
     )
   }
 
@@ -118,7 +115,7 @@ function App() {
       case 0:
         return 0;
       case 5:
-        return 2;
+        return 3;
       default:
         return 1;
     }
@@ -132,10 +129,19 @@ function App() {
           <p> Hello, this is my entry in the shoppy awards. To use this service, either use the search component to look for films, or the nominations component to manage nominations. Your nominations will persist as you come and go from the site. </p>
           <Steps size="small" current={getProgressIndex()}>
             <Step title="Search OMDB" />
-            <Step title={nominationCount === 5 ? "Nominations Complete!" : (5 - nominationCount) + " Nominations Left"} />
-            <Step title="Evaluate Picks and Share" />
+            <Step title={(5 - nominationCount) + " Nominations Left"} />
+            <Step title="Nominations Complete" />
           </Steps>
         </Card>
+
+        <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center", justifyContent: "center", alignItems: "center" }}>
+          <Space size={[16, 16]} wrap style={{ justifyContent: "center", alignItems: "center" }}>
+            {Object.entries(nominated).map(nominee => (
+              <NominationDetail body={nominee[1]} onClick={deleteNomination} />
+            ))}
+          </Space>
+        </Card>
+
 
         <Card className="App-compartment" title="Search" headStyle={{ fontSize: 24, textAlign: "center" }}>
           <h3> Movie Title:</h3>
@@ -150,32 +156,15 @@ function App() {
           />
           {query !== "" && !loading && <h3>Showing results for: {query}</h3>}
           <List
-            grid={{ gutter: 16 }}
             style={{ width: '100%', justifyContent: 'center' }}
             dataSource={searchResults}
             loading={loading}
             locale={{ emptyText: query === "" ? "Your Search Results Go Here!" : "No Search Results" }}
             renderItem={searchResult => (
-              <List.Item>
-                <MovieDetail body={searchResult} onClick={addNomination} />
-              </List.Item>
+              <MovieDetail body={searchResult} onClick={addNomination} />
             )}
           />
         </Card>
-
-        <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center", justifyContent: "center", alignItems: "center" }}>
-          <List
-            grid={{ gutter: 16 }}
-            locale={{ emptyText: "Your Nominations Go Here!" }}
-            dataSource={Object.entries(nominated)}
-            renderItem={nominee => (
-              <List.Item>
-                <NominationDetail body={nominee[1]} onClick={deleteNomination} />
-              </List.Item>
-            )}
-          />
-        </Card>
-
       </body>
     </div>
   );
