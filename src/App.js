@@ -139,7 +139,7 @@ function App() {
           </Steps>
         </Card>
 
-        <Card className="App-compartment" title="Nominations" headStyle={{ fontSize: 24, textAlign: "center", justifyContent: "center", alignItems: "center" }}>
+        <Card className="App-compartment" title="Nominations ✨" headStyle={{ fontSize: 24, textAlign: "center", justifyContent: "center", alignItems: "center" }}>
           <Space size={[16, 16]} wrap style={{ justifyContent: "center", alignItems: "center" }}>
             {Object.entries(nominated).map(nominee => (
               <NominationDetail body={nominee[1]} onClick={deleteNomination} />
@@ -148,7 +148,7 @@ function App() {
         </Card>
 
 
-        <Card className="App-compartment" title="Search" headStyle={{ fontSize: 24, textAlign: "center" }}>
+        <Card className="App-compartment" title="Search 🔎" headStyle={{ fontSize: 24, textAlign: "center" }}>
           <h3> Movie Title:</h3>
           <Input
             placeholder="Enter movie title here!"
