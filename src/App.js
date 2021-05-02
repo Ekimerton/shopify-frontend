@@ -1,5 +1,5 @@
 import './App.css';
-import { Input, Button, Steps, Spin, notification, Card, Space, List } from 'antd';
+import { Input, Button, Steps, notification, Card, Space, List } from 'antd';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 require('dotenv').config()
