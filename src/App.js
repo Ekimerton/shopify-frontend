@@ -125,7 +125,7 @@ function App() {
     <div>
       <body className="App-body">
 
-        <Card className="App-compartment" title="The Shoppies 🎬" headStyle={{ fontSize: 24, textAlign: "center" }}>
+        <Card className="App-compartment" title="The Shoppies 🎥" headStyle={{ fontSize: 24, textAlign: "center" }}>
           <p>
             Hi! My name is <a href={"https://www.linkedin.com/in/ekim-karabey/"}>Ekim</a> and this is my entry for the Spotify 2021 Fall Internship coding challenge. In case you stumble upon this by accident and are confused, the guidelines for the challenge are <a href={"https://docs.google.com/document/d/1SdR9rQpocsH5rPTOcxr9noqHRld5NJlylKO9Hf94U8U"}>here</a>. All of the code for this project can be found on <a href={"https://github.com/Ekimerton/shopify-frontend"}>Github</a>.
           </p>
